@@ -1,21 +1,13 @@
-from .admin.orders import router as admin_orders_router
-from .admin.products import router as admin_products_router
-from .user.cart import router as cart_router
-from .user.catalog import router as catalog_router
-from .user.checkout import router as checkout_router
-from .user.location import router as location_router
-from .user.product import router as product_router
-from .user.search import router as search_router
-from .user.start import router as start_router
+from bot.handlers.admin import start as admin_start
+from bot.handlers.user import start, catalog, product, cart, checkout, search, location
 
 routers = [
-    start_router,
-    catalog_router,
-    search_router,
-    product_router,
-    cart_router,
-    checkout_router,
-    location_router,
-    admin_products_router,
-    admin_orders_router,
+    start.router,
+    catalog.router,
+    product.router,
+    cart.router,
+    checkout.router,
+    search.router,
+    location.router,
+    admin_start.router,  # Admin router qo'shildi
 ]

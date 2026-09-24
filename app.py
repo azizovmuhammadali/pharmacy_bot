@@ -48,7 +48,6 @@ app = FastAPI(title="Pharmacy Mini App", lifespan=lifespan)
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
-
 import asyncio
 import logging
 from contextlib import asynccontextmanager
