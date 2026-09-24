@@ -1,0 +1,6 @@
+aiogram>=3.13
+SQLAlchemy[asyncio]>=2.0
+aiosqlite
+python-dotenv
+fastapi
+uvicorn[standard]
