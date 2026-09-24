@@ -14,16 +14,16 @@
   --button: var(--tg-theme-button-color, #2678b6);
   --button-text: var(--tg-theme-button-text-color, #ffffff);
   --secondary-bg: var(--tg-theme-secondary-bg-color, #f0f0f0);
-  --header-bg: rgba(255, 255, 255, 0.8);
-  --card-bg: rgba(255, 255, 255, 0.9);
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --header-bg: rgba(255, 255, 255, 0.85);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   --radius: 20px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --header-bg: rgba(30, 30, 30, 0.8);
-    --card-bg: rgba(40, 40, 40, 0.9);
+    --header-bg: rgba(30, 30, 30, 0.85);
+    --card-bg: rgba(40, 40, 40, 0.95);
     --secondary-bg: #1c1c1e;
     --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
@@ -137,6 +137,16 @@ body {
 /* Empty State */
 .empty { text-align: center; padding: 60px 20px; color: var(--hint); }
 .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+
+/* Order List */
+.order-item {
+  background: var(--card-bg); padding: 16px; border-radius: 16px;
+  margin: 0 20px 12px; box-shadow: var(--shadow);
+}
+.order-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.order-id { font-weight: 700; }
+.order-total { color: var(--button); font-weight: 700; }
+.order-status { font-size: 13px; color: var(--hint); }
 </style>
 </head>
 <body>
@@ -168,7 +178,7 @@ body {
   </div>
 </div>
 
-<!-- Admin View (Faqat adminlar uchun) -->
+<!-- Admin View -->
 <div id="view-admin" class="view">
   <div class="admin-stats">
     <div class="stat-card">
@@ -180,10 +190,8 @@ body {
       <div class="stat-label">Buyurtmalar</div>
     </div>
   </div>
-  <div style="padding: 0 20px;">
-    <h3 style="margin-top: 30px;">So'nggi buyurtmalar</h3>
-    <div id="adminOrdersList"></div>
-  </div>
+  <h3 style="margin: 30px 20px 16px;">So'nggi buyurtmalar</h3>
+  <div id="adminOrdersList"></div>
 </div>
 
 <nav class="nav">
@@ -202,6 +210,10 @@ body {
 const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 
+// URL parametrlarini o'qish
+const urlParams = new URLSearchParams(window.location.search);
+const startTab = urlParams.get('tab');
+
 // API Helper
 async function api(path, opts = {}) {
   const res = await fetch('/api' + path, {
@@ -216,17 +228,19 @@ async function api(path, opts = {}) {
 }
 
 // Navigation
+function switchView(viewName) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  const navItem = document.querySelector(`[data-view="${viewName}"]`);
+  if (navItem) navItem.classList.add('active');
+  
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + viewName).classList.add('active');
+  
+  if (viewName === 'admin') loadAdminData();
+}
+
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.onclick = () => {
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    
-    const view = item.dataset.view;
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + view).classList.add('active');
-    
-    if (view === 'admin') loadAdminData();
-  };
+  item.onclick = () => switchView(item.dataset.view);
 });
 
 // Load Categories
@@ -256,10 +270,10 @@ async function loadProducts(catId = '') {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = products.map(p => `
       <div class="card">
-        <div class="card-img">💊</div>
+        <div class="card-img"></div>
         <div class="card-body">
           <h4 class="card-title">${p.name}</h4>
-          <div class="card-price">${p.price} so'm</div>
+          <div class="card-price">${p.price.toLocaleString()} so'm</div>
         </div>
       </div>
     `).join('');
@@ -276,12 +290,12 @@ async function loadAdminData() {
     const orders = await api('/admin/orders');
     const list = document.getElementById('adminOrdersList');
     list.innerHTML = orders.map(o => `
-      <div style="background: var(--card-bg); padding: 16px; border-radius: 16px; margin-bottom: 12px; box-shadow: var(--shadow);">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <b>#${o.id}</b>
-          <span style="color: var(--button); font-weight: 700;">${o.total} so'm</span>
+      <div class="order-item">
+        <div class="order-header">
+          <span class="order-id">#${o.id}</span>
+          <span class="order-total">${o.total.toLocaleString()} so'm</span>
         </div>
-        <div style="font-size: 13px; color: var(--hint);">Holat: ${o.status}</div>
+        <div class="order-status">Holat: ${o.status}</div>
       </div>
     `).join('');
   } catch(e) {}
@@ -291,10 +305,12 @@ async function loadAdminData() {
 async function checkAdmin() {
   try {
     const me = await api('/me');
-    // Agar admin_ids ro'yxatida bo'lsa (bu yerda soddalashtirilgan, aslida serverda tekshiriladi)
-    // Hozircha hardcode qilib turamiz, keyin API orqali aniqroq qilamiz
-    if (me.id === 8716186604) { // Sizning ID
+    if (me.id === 8716186604) {
       document.getElementById('adminTab').style.display = 'block';
+      // Agar URL'da ?tab=admin bo'lsa, admin panelni och
+      if (startTab === 'admin') {
+        switchView('admin');
+      }
     }
   } catch(e) {}
 }
