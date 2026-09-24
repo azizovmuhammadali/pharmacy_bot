@@ -3,378 +3,306 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Dorixona</title>
+<title>Zamin Farm Premium</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{
-  --bg:var(--tg-theme-bg-color,#ffffff);
-  --txt:var(--tg-theme-text-color,#0f172a);
-  --hint:var(--tg-theme-hint-color,#94a3b8);
-  --sec:var(--tg-theme-secondary-bg-color,#f1f5f9);
-  --link:var(--tg-theme-link-color,#2563eb);
-  --btn:var(--tg-theme-button-color,#3b82f6);
-  --btntxt:var(--tg-theme-button-text-color,#ffffff);
-  --danger:#ef4444; --ok:#22c55e;
-  --radius:18px; --shadow:0 8px 30px rgba(2,6,23,.10);
+:root {
+  --bg: var(--tg-theme-bg-color, #ffffff);
+  --text: var(--tg-theme-text-color, #000000);
+  --hint: var(--tg-theme-hint-color, #999999);
+  --link: var(--tg-theme-link-color, #2678b6);
+  --button: var(--tg-theme-button-color, #2678b6);
+  --button-text: var(--tg-theme-button-text-color, #ffffff);
+  --secondary-bg: var(--tg-theme-secondary-bg-color, #f0f0f0);
+  --header-bg: rgba(255, 255, 255, 0.8);
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --radius: 20px;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--txt);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
-  padding-bottom:calc(72px + env(safe-area-inset-bottom));overscroll-behavior-y:contain}
-button{font-family:inherit}
-img{max-width:100%}
 
-/* header */
-.top{position:sticky;top:0;z-index:6;background:color-mix(in srgb,var(--bg) 82%,transparent);
-  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
-  border-bottom:1px solid color-mix(in srgb,var(--txt) 8%,transparent)}
-.brand{display:flex;align-items:center;gap:10px;padding:14px 16px 6px}
-.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;
-  background:linear-gradient(135deg,var(--btn),#8b5cf6);font-size:18px;box-shadow:var(--shadow)}
-.brand h1{font-size:19px;margin:0;font-weight:800;letter-spacing:-.2px}
-.brand small{display:block;color:var(--hint);font-weight:600;font-size:11px;margin-top:1px}
-.searchwrap{padding:6px 16px 10px}
-.search{display:flex;align-items:center;gap:8px;background:var(--sec);border-radius:14px;padding:0 12px;height:44px}
-.search svg{flex:0 0 auto;opacity:.55}
-.search input{flex:1;border:0;background:transparent;outline:none;color:var(--txt);font-size:15px;height:100%}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex:0 0 auto;border:0;background:var(--sec);color:var(--txt);padding:9px 15px;border-radius:999px;
-  font-size:13.5px;font-weight:650;cursor:pointer;transition:.18s}
-.chip.active{background:var(--btn);color:var(--btntxt);box-shadow:0 6px 16px color-mix(in srgb,var(--btn) 40%,transparent)}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --header-bg: rgba(30, 30, 30, 0.8);
+    --card-bg: rgba(40, 40, 40, 0.9);
+    --secondary-bg: #1c1c1e;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+}
 
-/* grid */
-.view{display:none;padding:4px 14px 20px;animation:fade .25s ease}
-.view.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.card{background:var(--sec);border-radius:var(--radius);overflow:hidden;cursor:pointer;
-  transition:transform .12s ease, box-shadow .2s ease;display:flex;flex-direction:column}
-.card:active{transform:scale(.97)}
-.thumb{height:108px;display:grid;place-items:center;font-size:40px;position:relative}
-.thumb .stockpill{position:absolute;top:8px;right:8px;font-size:11px;font-weight:700;
-  background:rgba(255,255,255,.85);color:#0f172a;padding:3px 8px;border-radius:999px;backdrop-filter:blur(4px)}
-.thumb .stockpill.low{background:rgba(239,68,68,.92);color:#fff}
-.cbody{padding:10px 12px 13px}
-.cbody h4{margin:0 0 6px;font-size:14.5px;line-height:1.25;font-weight:700;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:36px}
-.price{color:var(--btn);font-weight:800;font-size:15px}
-.skel{height:178px;border-radius:var(--radius);background:linear-gradient(90deg,var(--sec) 25%,
-  color-mix(in srgb,var(--sec) 60%,var(--bg)) 37%,var(--sec) 63%);background-size:400% 100%;
-  animation:sh 1.3s infinite}
-@keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
-.empty{text-align:center;padding:60px 24px;color:var(--hint)}
-.empty .big{font-size:54px;line-height:1;margin-bottom:14px;filter:saturate(.9)}
-.empty p{margin:6px 0;font-weight:600}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0; padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg); color: var(--text);
+  padding-bottom: 80px;
+  overflow-x: hidden;
+}
 
-/* bottom nav */
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;
-  background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);
-  border-top:1px solid color-mix(in srgb,var(--txt) 8%,transparent);
-  padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
-.nav button{flex:1;border:0;background:transparent;color:var(--hint);display:flex;flex-direction:column;
-  align-items:center;gap:3px;font-size:11px;font-weight:650;cursor:pointer;padding:6px 0;position:relative}
-.nav button.active{color:var(--btn)}
-.nav .ic{width:24px;height:24px;display:grid;place-items:center}
-.badge{position:absolute;top:2px;right:calc(50% - 22px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;
-  background:var(--danger);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;
-  transform:scale(0);transition:transform .2s cubic-bezier(.2,1.4,.4,1)}
-.badge.show{transform:scale(1)}
+/* Header */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--header-bg);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.header p { margin: 4px 0 0; font-size: 13px; color: var(--hint); }
 
-/* sheets */
-.ov{position:fixed;inset:0;background:rgba(2,6,23,.45);z-index:20;display:flex;align-items:flex-end;
-  opacity:0;pointer-events:none;transition:opacity .25s}
-.ov.show{opacity:1;pointer-events:auto}
-.sheet{background:var(--bg);width:100%;max-width:560px;margin:0 auto;border-radius:22px 22px 0 0;
-  max-height:90vh;overflow:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.9,.25,1);
-  padding-bottom:env(safe-area-inset-bottom)}
-.ov.show .sheet{transform:none}
-.grab{width:38px;height:4px;border-radius:4px;background:color-mix(in srgb,var(--txt) 18%,transparent);margin:10px auto 4px}
-.hero{height:150px;display:grid;place-items:center;font-size:64px;position:relative}
-.hero .close{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;
-  background:rgba(255,255,255,.85);color:#0f172a;font-size:18px;cursor:pointer;display:grid;place-items:center}
-.sheetpad{padding:16px 18px 22px}
-.sheetpad h3{margin:0 0 4px;font-size:20px;font-weight:800;line-height:1.2}
-.metarow{display:flex;gap:8px;align-items:center;margin:8px 0 14px}
-.tag{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--sec)}
-.tag.price{color:var(--btn);background:color-mix(in srgb,var(--btn) 12%,transparent)}
-.sec{margin:14px 0}
-.sec h5{margin:0 0 5px;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:var(--hint);font-weight:800}
-.sec p{margin:0;font-size:14.5px;line-height:1.5;color:var(--txt)}
-.btn{width:100%;border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:750;cursor:pointer;
-  background:var(--btn);color:var(--btntxt);transition:transform .1s, filter .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn:active{transform:scale(.98)}
-.btn:disabled{filter:grayscale(.4) opacity(.6)}
-.btn.ghost{background:transparent;color:var(--txt);border:1.5px solid color-mix(in srgb,var(--txt) 14%,transparent);margin-top:10px}
-.btn.sm{padding:11px 14px;font-size:14px;width:auto;border-radius:12px}
+/* Search */
+.search-box {
+  margin: 16px 20px;
+  position: relative;
+}
+.search-box input {
+  width: 100%; padding: 14px 20px 14px 48px;
+  border-radius: 16px; border: none;
+  background: var(--secondary-bg);
+  color: var(--text); font-size: 15px;
+  outline: none; transition: all 0.3s;
+}
+.search-box input:focus { box-shadow: 0 0 0 2px var(--button); }
+.search-icon {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  color: var(--hint);
+}
 
-/* cart */
-.citem{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid color-mix(in srgb,var(--txt) 7%,transparent)}
-.cthumb{width:50px;height:50px;border-radius:13px;display:grid;place-items:center;font-size:24px;flex:0 0 auto}
-.cinfo{flex:1;min-width:0}
-.cinfo b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cinfo span{color:var(--hint);font-size:13px}
-.qty{display:flex;align-items:center;gap:6px;background:var(--sec);border-radius:12px;padding:4px}
-.qty button{width:30px;height:30px;border:0;border-radius:9px;background:var(--bg);color:var(--txt);font-size:17px;font-weight:800;cursor:pointer;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.qty span{min-width:20px;text-align:center;font-weight:800;font-size:14px}
-.del{border:0;background:transparent;color:var(--danger);font-size:18px;cursor:pointer;padding:6px}
-.totalrow{display:flex;justify-content:space-between;align-items:baseline;margin:18px 2px 14px}
-.totalrow b{font-size:18px}
-.totalrow .amt{font-size:20px;font-weight:800;color:var(--btn)}
+/* Categories */
+.categories {
+  display: flex; gap: 12px; overflow-x: auto;
+  padding: 0 20px 16px; scrollbar-width: none;
+}
+.categories::-webkit-scrollbar { display: none; }
+.cat-chip {
+  flex-shrink: 0; padding: 10px 20px;
+  border-radius: 12px; background: var(--secondary-bg);
+  font-size: 14px; font-weight: 600; color: var(--text);
+  cursor: pointer; transition: all 0.2s;
+}
+.cat-chip.active { background: var(--button); color: var(--button-text); }
 
-/* form */
-label{display:block;font-size:12.5px;color:var(--hint);font-weight:700;margin:14px 0 6px}
-.inp,select{width:100%;padding:13px 14px;border-radius:13px;border:1.5px solid color-mix(in srgb,var(--txt) 10%,transparent);
-  background:var(--sec);color:var(--txt);font-size:15px;outline:none;transition:border .2s}
-.inp:focus,select:focus{border-color:var(--btn)}
-.seg{display:flex;background:var(--sec);border-radius:13px;padding:4px;gap:4px}
-.seg button{flex:1;border:0;background:transparent;color:var(--hint);padding:11px;border-radius:10px;font-weight:750;font-size:14px;cursor:pointer;transition:.18s}
-.seg button.on{background:var(--bg);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.07)}
+/* Grid */
+.grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  padding: 0 20px;
+}
+.card {
+  background: var(--card-bg); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow);
+  transition: transform 0.2s; cursor: pointer;
+}
+.card:active { transform: scale(0.97); }
+.card-img {
+  height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+}
+.card-body { padding: 12px; }
+.card-title { font-size: 14px; font-weight: 700; margin: 0 0 6px; line-height: 1.3; }
+.card-price { font-size: 16px; font-weight: 800; color: var(--button); }
 
-/* branches */
-.bcard{background:var(--sec);border-radius:var(--radius);padding:15px;margin-bottom:12px}
-.bcard h4{margin:0 0 4px;font-size:15.5px}
-.bcard .addr{color:var(--hint);font-size:13.5px;margin-bottom:10px;display:flex;gap:6px;align-items:flex-start}
-.brow{display:flex;gap:8px}
+/* Bottom Nav */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--header-bg); backdrop-filter: blur(20px);
+  display: flex; justify-content: space-around;
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(0,0,0,0.05); z-index: 100;
+}
+.nav-item {
+  flex: 1; text-align: center; padding: 8px;
+  color: var(--hint); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: color 0.2s;
+}
+.nav-item.active { color: var(--button); }
+.nav-icon { font-size: 22px; display: block; margin-bottom: 4px; }
 
-/* toast */
-.toasts{position:fixed;top:14px;left:0;right:0;z-index:50;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
-.toast{background:var(--txt);color:var(--bg);padding:11px 18px;border-radius:999px;font-size:14px;font-weight:650;
-  box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;animation:tin .3s ease, tout .3s ease 2.2s forwards;max-width:88%}
-.toast.ok{background:var(--ok);color:#fff}.toast.err{background:var(--danger);color:#fff}
-@keyframes tin{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
-@keyframes tout{to{opacity:0;transform:translateY(-12px)}}
-.hidden{display:none!important}
+/* Views */
+.view { display: none; animation: fadeIn 0.3s; }
+.view.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* Admin Panel */
+.admin-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  padding: 20px;
+}
+.stat-card {
+  background: var(--card-bg); padding: 20px; border-radius: var(--radius);
+  box-shadow: var(--shadow); text-align: center;
+}
+.stat-num { font-size: 32px; font-weight: 800; color: var(--button); margin: 0; }
+.stat-label { font-size: 13px; color: var(--hint); margin-top: 8px; }
+
+/* Empty State */
+.empty { text-align: center; padding: 60px 20px; color: var(--hint); }
+.empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
 </style>
 </head>
 <body>
 
-<div class="top">
-  <div class="brand">
-    <div class="logo">💊</div>
-    <div><h1>Dorixona</h1><small>Tebiiy va tez xizmat</small></div>
-  </div>
-  <div class="searchwrap">
-    <div class="search">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="q" placeholder="Dori nomini qidiring..." autocomplete="off">
-    </div>
-  </div>
-  <div class="chips" id="chips"></div>
+<div class="header">
+  <h1>💊 Zamin Farm</h1>
+  <p>Premium Dorixona Xizmati</p>
 </div>
 
-<main class="view active" id="v-catalog"><div class="grid" id="grid"></div></main>
+<div class="search-box">
+  <span class="search-icon">🔍</span>
+  <input type="text" placeholder="Dori qidirish..." id="searchInput">
+</div>
 
-<main class="view" id="v-cart"><div id="cartBox"></div></main>
+<div class="categories" id="categories">
+  <div class="cat-chip active" data-id="">Hammasi</div>
+</div>
 
-<main class="view" id="v-branch"><div id="branchBox" style="padding-top:8px"></div></main>
+<!-- Catalog View -->
+<div id="view-catalog" class="view active">
+  <div class="grid" id="productGrid"></div>
+</div>
+
+<!-- Cart View -->
+<div id="view-cart" class="view">
+  <div class="empty">
+    <div class="empty-icon">🛒</div>
+    <p>Savat bo'sh</p>
+  </div>
+</div>
+
+<!-- Admin View (Faqat adminlar uchun) -->
+<div id="view-admin" class="view">
+  <div class="admin-stats">
+    <div class="stat-card">
+      <p class="stat-num" id="statProducts">0</p>
+      <div class="stat-label">Mahsulotlar</div>
+    </div>
+    <div class="stat-card">
+      <p class="stat-num" id="statOrders">0</p>
+      <div class="stat-label">Buyurtmalar</div>
+    </div>
+  </div>
+  <div style="padding: 0 20px;">
+    <h3 style="margin-top: 30px;">So'nggi buyurtmalar</h3>
+    <div id="adminOrdersList"></div>
+  </div>
+</div>
 
 <nav class="nav">
-  <button data-v="catalog" class="active"><span class="ic">🗂</span>Katalog</button>
-  <button data-v="cart"><span class="ic">🛒</span>Savat<span class="badge" id="badge">0</span></button>
-  <button data-v="branch"><span class="ic">📍</span>Filiallar</button>
+  <div class="nav-item active" data-view="catalog">
+    <span class="nav-icon">🏠</span>Katalog
+  </div>
+  <div class="nav-item" data-view="cart">
+    <span class="nav-icon">🛒</span>Savat
+  </div>
+  <div class="nav-item" data-view="admin" id="adminTab" style="display: none;">
+    <span class="nav-icon">⚙️</span>Admin
+  </div>
 </nav>
 
-<div class="ov" id="prodOv"><div class="sheet" id="prodSheet"></div></div>
-<div class="ov" id="chkOv"><div class="sheet" id="chkSheet"></div></div>
-<div class="toasts" id="toasts"></div>
-
 <script>
-const tg=window.Telegram.WebApp; tg.ready(); tg.expand();
-const INIT=tg.initData||"";
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const esc=s=>(s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const money=n=>Number(n).toLocaleString("uz-UZ",{minimumFractionDigits:0,maximumFractionDigits:0})+" so'm";
-const GRADS=[["#6366f1","#a855f7"],["#0ea5e9","#22d3ee"],["#f59e0b","#fb7185"],["#10b981","#34d399"],["#ef4444","#f97316"],["#8b5cf6","#ec4899"],["#14b8a6","#0ea5e9"],["#f43f5e","#a855f7"]];
-const grad=id=>{const g=GRADS[id%GRADS.length];return `linear-gradient(135deg,${g[0]},${g[1]})`};
-const tap=()=>{try{tg.HapticFeedback.impactOccurred("light")}catch(e){}};
-const buzzOK=()=>{try{tg.HapticFeedback.notificationOccurred("success")}catch(e){}};
-const buzzErr=()=>{try{tg.HapticFeedback.notificationOccurred("error")}catch(e){}};
-function toast(msg,type=""){const t=document.createElement("div");t.className="toast "+type;t.textContent=msg;$("#toasts").appendChild(t);setTimeout(()=>t.remove(),2600);}
-function openUrl(u){try{tg.openLink(u)}catch(e){window.open(u,"_blank")}}
+const tg = window.Telegram.WebApp;
+tg.ready(); tg.expand();
 
-async function api(path,opts={}){
-  const res=await fetch("/api"+path,{...opts,headers:{"Content-Type":"application/json","X-Telegram-Init-Data":INIT,...(opts.headers||{})}});
-  if(res.status===401){throw new Error("AUTH");}
-  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.detail||("Xato "+res.status));}
+// API Helper
+async function api(path, opts = {}) {
+  const res = await fetch('/api' + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Telegram-Init-Data': tg.initData || ''
+    }
+  });
+  if (!res.ok) throw new Error('API Error');
   return res.json();
 }
 
-let curCat=null, curQ="";
-
-/* ---- nav ---- */
-$$(".nav button").forEach(b=>b.onclick=()=>{
-  tap();
-  $$(".nav button").forEach(x=>x.classList.remove("active")); b.classList.add("active");
-  $$(".view").forEach(v=>v.classList.remove("active")); $("#v-"+b.dataset.v).classList.add("active");
-  if(b.dataset.v==="cart") renderCart();
-  if(b.dataset.v==="branch") renderBranches();
-  window.scrollTo({top:0,behavior:"smooth"});
+// Navigation
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.onclick = () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    
+    const view = item.dataset.view;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+    
+    if (view === 'admin') loadAdminData();
+  };
 });
 
-/* ---- search ---- */
-let deb; $("#q").addEventListener("input",e=>{clearTimeout(deb);deb=setTimeout(()=>{curQ=e.target.value.trim();loadProducts();},280);});
-
-/* ---- chips ---- */
-async function loadChips(){
-  let cats=[]; try{cats=await api("/categories");}catch(e){return;}
-  $("#chips").innerHTML=`<button class="chip ${!curCat?"active":""}" data-id="">Hammasi</button>`+
-    cats.map(c=>`<button class="chip ${curCat===c.id?"active":""}" data-id="${c.id}">${esc(c.name)}</button>`).join("");
-  $$("#chips .chip").forEach(ch=>ch.onclick=()=>{tap();curCat=ch.dataset.id?Number(ch.dataset.id):null;curQ="";$("#q").value="";loadChips();loadProducts();});
+// Load Categories
+async function loadCategories() {
+  try {
+    const cats = await api('/categories');
+    const container = document.getElementById('categories');
+    cats.forEach(c => {
+      const chip = document.createElement('div');
+      chip.className = 'cat-chip';
+      chip.textContent = c.name;
+      chip.onclick = () => {
+        document.querySelectorAll('.cat-chip').forEach(x => x.classList.remove('active'));
+        chip.classList.add('active');
+        loadProducts(c.id);
+      };
+      container.appendChild(chip);
+    });
+  } catch(e) {}
 }
 
-/* ---- products ---- */
-function skeletons(n=6){$("#grid").innerHTML=Array.from({length:n},()=>`<div class="skel"></div>`).join("");}
-async function loadProducts(){
-  skeletons();
-  let items=[];
-  try{
-    if(curQ) items=await api("/products?q="+encodeURIComponent(curQ));
-    else if(curCat!=null) items=await api("/products?category_id="+curCat);
-    else items=await api("/products");
-  }catch(e){ if(e.message==="AUTH"){authFail();return;} $("#grid").innerHTML=errBlock("Yuklab bo'lmadi"); return; }
-  if(!items.length){$("#grid").innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="big">🔍</div><p>Hech narsa topilmadi</p><span style="font-size:13px">Boshqa so'z bilan qidirib ko'ring</span></div>`;return;}
-  $("#grid").innerHTML=items.map(p=>{
-    const low=p.stock<=5;
-    return `<div class="card" data-id="${p.id}">
-      <div class="thumb" style="background:${grad(p.id)}">💊
-        <span class="stockpill ${low?"low":""}">${p.stock>0?("omboda "+p.stock):"tugagan"}</span>
+// Load Products
+async function loadProducts(catId = '') {
+  try {
+    const url = catId ? `/products?category_id=${catId}` : '/products';
+    const products = await api(url);
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = products.map(p => `
+      <div class="card">
+        <div class="card-img">💊</div>
+        <div class="card-body">
+          <h4 class="card-title">${p.name}</h4>
+          <div class="card-price">${p.price} so'm</div>
+        </div>
       </div>
-      <div class="cbody"><h4>${esc(p.name)}</h4><div class="price">${money(p.price)}</div></div>
-    </div>`;
-  }).join("");
-  $$("#grid .card").forEach(c=>c.onclick=()=>{tap();openProduct(Number(c.dataset.id));});
+    `).join('');
+  } catch(e) {}
 }
-function errBlock(m){return `<div class="empty" style="grid-column:1/-1"><div class="big">⚠️</div><p>${esc(m)}</p></div>`;}
-function authFail(){$("#grid").innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="big">🔐</div><p>Ilovani Telegram orqali oching</p><span style="font-size:13px">yoki .env da DEV_MODE=1 yoqing</span></div>`;}
 
-/* ---- product sheet ---- */
-async function openProduct(id){
-  let p; try{p=await api("/products/"+id);}catch(e){toast("Xato","err");return;}
-  const low=p.stock<=5;
-  $("#prodSheet").innerHTML=`
-    <div class="grab"></div>
-    <div class="hero" style="background:${grad(p.id)}">💊<button class="close" data-x>✕</button></div>
-    <div class="sheetpad">
-      <h3>${esc(p.name)}</h3>
-      <div class="metarow">
-        <span class="tag price">${money(p.price)}</span>
-        <span class="tag" style="color:${low?"var(--danger)":"var(--ok)"}">${p.stock>0?("Omborda: "+p.stock):"Tugagan"}</span>
+// Admin Data
+async function loadAdminData() {
+  try {
+    const stats = await api('/admin/stats');
+    document.getElementById('statProducts').textContent = stats.total_products;
+    document.getElementById('statOrders').textContent = stats.total_orders;
+    
+    const orders = await api('/admin/orders');
+    const list = document.getElementById('adminOrdersList');
+    list.innerHTML = orders.map(o => `
+      <div style="background: var(--card-bg); padding: 16px; border-radius: 16px; margin-bottom: 12px; box-shadow: var(--shadow);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <b>#${o.id}</b>
+          <span style="color: var(--button); font-weight: 700;">${o.total} so'm</span>
+        </div>
+        <div style="font-size: 13px; color: var(--hint);">Holat: ${o.status}</div>
       </div>
-      <div class="sec"><h5>📄 Tavsif</h5><p>${esc(p.description)||"—"}</p></div>
-      <div class="sec"><h5>🧪 Tarkibi</h5><p>${esc(p.composition)||"—"}</p></div>
-      <div class="sec"><h5>ℹ️ Qo'llash bo'yicha</h5><p>${esc(p.usage_instructions)||"—"}</p></div>
-      <button class="btn" id="addBtn" ${p.stock>0?"":"disabled"}>🛒 Savatga qo'shish</button>
-      <button class="btn ghost" data-x>Yopish</button>
-    </div>`;
-  $("#prodOv").classList.add("show");
-  $$("#prodSheet [data-x]").forEach(b=>b.onclick=()=>closeOv("prodOv"));
-  if(p.stock>0) $("#addBtn").onclick=async()=>{
-    tap();
-    try{await api("/cart/add",{method:"POST",body:JSON.stringify({product_id:id,quantity:1})});
-      buzzOK(); toast("Savatga qo'shildi","ok"); refreshBadge(); closeOv("prodOv");
-    }catch(e){buzzErr(); toast(e.message==="AUTH"?"Auth xatosi":e.message,"err");}
-  };
+    `).join('');
+  } catch(e) {}
 }
 
-/* ---- badge ---- */
-async function refreshBadge(){
-  try{const c=await api("/cart");const n=c.items.reduce((s,i)=>s+i.quantity,0);
-    const b=$("#badge"); b.textContent=n; b.classList.toggle("show",n>0);
-  }catch(e){}
+// Check Admin
+async function checkAdmin() {
+  try {
+    const me = await api('/me');
+    // Agar admin_ids ro'yxatida bo'lsa (bu yerda soddalashtirilgan, aslida serverda tekshiriladi)
+    // Hozircha hardcode qilib turamiz, keyin API orqali aniqroq qilamiz
+    if (me.id === 8716186604) { // Sizning ID
+      document.getElementById('adminTab').style.display = 'block';
+    }
+  } catch(e) {}
 }
 
-/* ---- cart ---- */
-async function renderCart(){
-  const box=$("#cartBox"); box.innerHTML=`<div class="skel" style="height:90px;margin-bottom:12px"></div><div class="skel" style="height:90px"></div>`;
-  let c; try{c=await api("/cart");}catch(e){box.innerHTML=errBlock("Savatni yuklab bo'lmadi");return;}
-  if(!c.items.length){box.innerHTML=`<div class="empty"><div class="big">🛒</div><p>Savatingiz bo'sh</p><span style="font-size:13px">Katalogdan mahsulot qo'shing</span><br><br><button class="btn sm" onclick="switchTab('catalog')">🗂 Katalogga o'tish</button></div>`;return;}
-  box.innerHTML=c.items.map(i=>`
-    <div class="citem">
-      <div class="cthumb" style="background:${grad(i.product_id)}">💊</div>
-      <div class="cinfo"><b>${esc(i.name)}</b><span>${money(i.price)} × ${i.quantity} = <b style="color:var(--txt)">${money(i.line_total)}</b></span></div>
-      <div class="qty"><button data-d="-1" data-id="${i.item_id}">−</button><span>${i.quantity}</span><button data-d="1" data-id="${i.item_id}">+</button></div>
-      <button class="del" data-rm="${i.item_id}">🗑</button>
-    </div>`).join("")+
-    `<div class="totalrow"><span>Jami</span><span class="amt">${money(c.total)}</span></div>
-     <button class="btn" id="chkBtn">✅ Buyurtma berish</button>`;
-  box.querySelectorAll(".qty button").forEach(b=>b.onclick=async()=>{tap();
-    try{await api("/cart/update",{method:"POST",body:JSON.stringify({item_id:Number(b.dataset.id),delta:Number(b.dataset.d)})});renderCart();refreshBadge();}
-    catch(e){toast(e.message,"err");}});
-  box.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{tap();
-    try{await api("/cart/"+b.dataset.rm,{method:"DELETE"});renderCart();refreshBadge();toast("Olib tashlandi");}catch(e){toast(e.message,"err");}});
-  $("#chkBtn").onclick=openCheckout;
-}
-function switchTab(v){$$(".nav button").forEach(x=>{if(x.dataset.v===v){x.click();}});}
-
-/* ---- checkout ---- */
-async function openCheckout(){
-  let br=[]; try{br=await api("/branches");}catch(e){}
-  $("#chkSheet").innerHTML=`
-    <div class="grab"></div>
-    <div class="sheetpad">
-      <h3 style="margin-bottom:2px">Buyurtma rasmiylashtirish</h3>
-      <span style="color:var(--hint);font-size:13.5px">Ma'lumotlaringizni kiriting</span>
-      <label>📱 Telefon raqam</label>
-      <input class="inp" id="phone" type="tel" placeholder="+998 90 000 00 00">
-      <label>🚚 Yetkazib berish usuli</label>
-      <div class="seg"><button class="on" data-m="delivery">Yetkazib berish</button><button data-m="pickup">Olib ketish</button></div>
-      <div id="addrWrap"><label>🏠 Manzil</label><input class="inp" id="address" placeholder="Ko'cha, uy, xonadon"></div>
-      <div id="brWrap" class="hidden"><label>🏪 Filialni tanlang</label>
-        <select id="branch">${br.map(b=>`<option value="${b.id}">${esc(b.name)} — ${esc(b.address)}</option>`).join("")||'<option value="">Filial yo\'q</option>'}</select></div>
-      <button class="btn" style="margin-top:20px" id="sendBtn">📦 Buyurtmani yuborish</button>
-      <button class="btn ghost" data-x>Bekor qilish</button>
-    </div>`;
-  $("#chkOv").classList.add("show");
-  $$("#chkSheet [data-x]").forEach(b=>b.onclick=()=>closeOv("chkOv"));
-  let method="delivery";
-  $$("#chkSheet .seg button").forEach(b=>b.onclick=()=>{tap();method=b.dataset.m;
-    $$("#chkSheet .seg button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
-    $("#addrWrap").classList.toggle("hidden",method==="pickup");
-    $("#brWrap").classList.toggle("hidden",method!=="pickup");});
-  $("#sendBtn").onclick=async()=>{
-    tap();
-    const phone=$("#phone").value.trim();
-    if(phone.length<9){buzzErr();toast("To'g'ri telefon kiriting","err");return;}
-    const body={phone,delivery_method:method,
-      address:method==="delivery"?$("#address").value.trim():null,
-      branch_id:method==="pickup"?Number($("#branch").value)||null:null};
-    if(method==="delivery"&&!body.address){buzzErr();toast("Manzilni kiriting","err");return;}
-    $("#sendBtn").disabled=true; $("#sendBtn").textContent="Yuborilmoqda...";
-    try{const r=await api("/checkout",{method:"POST",body:JSON.stringify(body)});
-      buzzOK(); closeOv("chkOv"); renderCart(); refreshBadge();
-      toast("✅ Buyurtma #"+r.order_id+" qabul qilindi","ok");
-    }catch(e){buzzErr(); $("#sendBtn").disabled=false; $("#sendBtn").textContent="📦 Buyurtmani yuborish";
-      toast(e.message==="AUTH"?"Auth xatosi":e.message,"err");}
-  };
-}
-
-/* ---- branches ---- */
-async function renderBranches(){
-  const box=$("#branchBox"); box.innerHTML=`<div class="skel" style="height:96px;margin-bottom:12px"></div><div class="skel" style="height:96px"></div>`;
-  let br; try{br=await api("/branches");}catch(e){box.innerHTML=errBlock("Yuklab bo'lmadi");return;}
-  if(!br.length){box.innerHTML=`<div class="empty"><div class="big">📍</div><p>Filiallar yo'q</p></div>`;return;}
-  box.innerHTML=br.map(b=>`
-    <div class="bcard">
-      <h4>🏪 ${esc(b.name)}</h4>
-      <div class="addr"><span>📍</span><span>${esc(b.address)}</span></div>
-      <div class="brow">
-        ${b.phone?`<a class="btn sm" style="text-decoration:none" href="tel:${esc(b.phone)}">📞 Qo'ng'iroq</a>`:""}
-        <button class="btn sm ghost" style="margin:0" data-map="${esc(b.address)}">🗺 Xarita</button>
-      </div>
-    </div>`).join("");
-  box.querySelectorAll("[data-map]").forEach(b=>b.onclick=()=>{tap();openUrl("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(b.dataset.map));});
-}
-
-function closeOv(id){$("#"+id).classList.remove("show");}
-["prodOv","chkOv"].forEach(id=>$("#"+id).addEventListener("click",e=>{if(e.target.id===id)closeOv(id);}));
-
-/* ---- init ---- */
-(async function(){
-  try{await api("/me");}catch(e){ if(e.message==="AUTH"){authFail();return;} }
-  await loadChips(); await loadProducts(); await refreshBadge();
-})();
+// Init
+loadCategories();
+loadProducts();
+checkAdmin();
 </script>
 </body>
 </html>

@@ -156,3 +156,43 @@ async def checkout(body: CheckoutBody, user: dict = Depends(current_user), sessi
 async def branches(session: AsyncSession = Depends(get_session)):
     bs = await branch_service.get_branches(session)
     return [{"id": b.id, "name": b.name, "address": b.address, "phone": b.phone} for b in bs]
+
+# --- ADMIN ENDPOINTS ---
+
+@router.get("/admin/stats")
+async def admin_stats(user: dict = Depends(current_user), session: AsyncSession = Depends(get_session)):
+    if int(user["id"]) not in config.admin_ids:
+        raise HTTPException(status_code=403, detail="Admin huquqi yo'q")
+    
+    # Oddi statistika (keyinroq murakkablashtiramiz)
+    from bot.db.models import Product, Order
+    from sqlalchemy import func
+    
+    product_count = await session.execute(func.count(Product.id))
+    order_count = await session.execute(func.count(Order.id))
+    
+    return {
+        "total_products": product_count.scalar(),
+        "total_orders": order_count.scalar(),
+        "admin_name": user.get("first_name")
+    }
+
+@router.get("/admin/orders")
+async def admin_orders(user: dict = Depends(current_user), session: AsyncSession = Depends(get_session)):
+    if int(user["id"]) not in config.admin_ids:
+        raise HTTPException(status_code=403, detail="Admin huquqi yo'q")
+    
+    from bot.db.models import Order
+    # So'nggi 50 ta buyurtma
+    result = await session.execute(
+        select(Order).order_by(Order.created_at.desc()).limit(50)
+    )
+    orders = result.scalars().all()
+    
+    return [{
+        "id": o.id,
+        "user_id": o.user_id,
+        "total": float(o.total),
+        "status": o.status,
+        "created_at": o.created_at.isoformat() if o.created_at else None
+    } for o in orders]
